@@ -176,12 +176,12 @@ namespace MyActorWorkerRole
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
-        private ActorSystem _actorSystem;
+        private ActorSystem actorSystem;
 
         public override bool OnStart()
         {
             // Setup the Actor System
-            _actorSystem = ActorSystem.Create("MySystem");
+            actorSystem = ActorSystem.Create("MySystem");
 
             return (base.OnStart());
         }
@@ -192,7 +192,7 @@ namespace MyActorWorkerRole
             this.runCompleteEvent.WaitOne();
 
             // Shutdown the Actor System
-            _actorSystem.Shutdown();
+            actorSystem.Terminate();
 
             base.OnStop();
         }
@@ -212,7 +212,7 @@ namespace MyActorWorkerRole
         private async Task RunAsync(CancellationToken cancellationToken)
         {
             // Create an instance to the top-level user Actor
-            var workerRoleActor = _actorSystem.ActorOf<WorkerRoleActor>("WorkerRole");
+            var workerRoleActor = actorSystem.ActorOf<WorkerRoleActor>("WorkerRole");
 
             // Send a message to the Actor
             workerRoleActor.Tell(new WorkerRoleMessage("Hello World!"));
